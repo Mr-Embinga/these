@@ -76,6 +76,18 @@ visuellement identique, cohérent avec l'absence d'API spécifique à un navigat
 Audit outillé (axe-core 4.9.1) mené sur les 9 pages/états de l'application : zéro violation.
 Détail dans `note_securisation_et_accessibilite.md`.
 
+## Déploiement (Render, gratuit)
+
+Le dépôt racine (`these/`, pas `these/app/`) contient un fichier `render.yaml` : Render le lit
+automatiquement et configure le service sans manipulation dans le tableau de bord (build, commande
+de démarrage `gunicorn`, variable `FLASK_SECRET_KEY` générée aléatoirement, cookies forcés en
+HTTPS). Étapes : pousser ce dépôt sur GitHub, créer un compte Render, "New +" → "Blueprint",
+connecter le dépôt. HTTPS est fourni automatiquement par Render sur le sous-domaine
+`*.onrender.com`, sans configuration ni coût supplémentaire.
+
+L'offre gratuite met le service en veille après ~15 minutes d'inactivité (30-60 secondes pour
+redémarrer au prochain accès) — à garder en tête avant une démonstration en direct.
+
 ## Structure du code
 
 - `app.py` — partie « back » : chargement des modèles, prédiction, seuil de restitution,
