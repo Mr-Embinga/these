@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+{% block titre %}Méthode et validation{% endblock %}
+{% block contenu %}
+<section>
+    <h2>Méthode et validation</h2>
+    <p>
+        Cette page explique ma démarche à quelqu'un qui n'a pas lu le dossier complet : ce que j'ai
+        vérifié, pas seulement ce que j'ai supposé. Dépliez une section pour le détail — l'essentiel
+        tient dans les chiffres ci-dessous.
+    </p>
+
+    <section class="section-cartes">
+        <h3>L'écart mesuré, département par département</h3>
+        <p>
+            Bleu : je surestime l'accès réel. Rouge : je le sous-estime. Plus la teinte est soutenue,
+            plus l'écart est grand. Cette carte n'a de sens que comme preuve : je compare la prédiction
+            à la vraie valeur, que je connais ici seulement parce que le scénario est simulé sur des
+            données en réalité complètes (section 1 ci-dessous). Dans un vrai cas de collecte
+            interrompue, cet écart ne serait jamais mesurable directement.
+        </p>
+        <div class="rangee-cartes">
+            <div>
+                <h4 style="color: var(--serie-eau-texte);">Eau</h4>
+                <div id="carte-erreur-eau" class="conteneur-carte"></div>
+            </div>
+            <div>
+                <h4 style="color: var(--serie-electricite-texte);">Électricité</h4>
+                <div id="carte-erreur-electricite" class="conteneur-carte"></div>
+            </div>
+            <div>
+                <h4 style="color: var(--serie-fibre-texte);">Fibre</h4>
+                <div id="carte-erreur-fibre" class="conteneur-carte"></div>
+            </div>
+        </div>
+
+        <details class="bascule-table">
+            <summary>Voir les données par département en table (équivalent accessible des cartes)</summary>
+            <table data-table-triable>
+                <caption>Écart mesuré (prédit − réel) par département et par réseau</caption>
+                <thead><tr><th scope="col">Département</th><th scope="col">Réseau</th><th scope="col">Effectif</th><th scope="col">Taux réel</th><th scope="col">Taux prédit</th><th scope="col">Écart</th></tr></thead>
+                <tbody>
+                    {% for r in erreur_dept %}
+                    <tr>
+                        <th scope="row">{{ r.nom }}</th>
+                        <td>{{ r.reseau | capitalize }}</td>
+                        <td>{{ r.n }}</td>
+                        <td>{{ (r.taux_reel*100) | round(1) }} %</td>
+                        <td>{{ (r.taux_predit*100) | round(1) }} %</td>
+                        <td>{{ r.erreur_pts | round(1) }} pts</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </details>
+    </section>
+
+    <h3>Fiabilité mesurée, par réseau</h3>
+    <div class="rangee-kpi">
+        <div class="carte-kpi serie-eau">
+            <span class="kpi-etiquette">Eau — AUC hors domaine</span>
+            <span class="kpi-valeur">{{ synthese.auc_niveau3_hors_domaine['eau'] }}</span>
+            <span class="kpi-detail">mesuré contre la vérité réelle, 8 provinces</span>
+        </div>
+        <div class="carte-kpi serie-electricite">
+            <span class="kpi-etiquette">Électricité — AUC hors domaine</span>
+            <span class="kpi-valeur">{{ synthese.auc_niveau3_hors_domaine['électricité'] }}</span>
+            <span class="kpi-detail">mesuré contre la vérité réelle, 8 provinces</span>
+        </div>
+        <div class="carte-kpi serie-fibre">
+            <span class="kpi-etiquette">Fibre — AUC hors domaine</span>
+            <span class="kpi-valeur">{{ synthese.auc_niveau3_hors_domaine['fibre'] }}</span>
+            <span class="kpi-detail">mesuré contre la vérité réelle, 8 provinces</span>
+        </div>
+    </div>
+    <div class="encadre-definition">
+        <strong>AUC</strong> (aire sous la courbe ROC) — la capacité du modèle à mieux classer une
+        structure réellement éligible qu'une structure réellement non éligible, sur une échelle de
+        0,5 (aucune information, équivalent au hasard) à 1,0 (classement parfait). « Hors domaine »
+        veut dire que je mesure ce score sur les 8 provinces jamais vues à l'entraînement, contre leur
+        vraie valeur : pas une estimation optimiste sur des données déjà connues du modèle.
+    </div>
+    <div class="rangee-kpi">
+        <div class="carte-kpi serie-eau">
+            <span class="kpi-etiquette">Eau — plancher d'erreur irréductible</span>
+            <span class="kpi-valeur">{{ (synthese.erreur_bayes_irreductible['fdsm123']*100) | round(1) }} %</span>
+        </div>
+        <div class="carte-kpi serie-electricite">
+            <span class="kpi-etiquette">Électricité — plancher d'erreur irréductible</span>
+            <span class="kpi-valeur">{{ (synthese.erreur_bayes_irreductible['fdsm124']*100) | round(1) }} %</span>
+        </div>
+        <div class="carte-kpi serie-fibre">
+            <span class="kpi-etiquette">Fibre — plancher d'erreur irréductible</span>
+            <span class="kpi-valeur">{{ (synthese.erreur_bayes_irreductible['fdsm125']*100) | round(1) }} %</span>
+            <span class="kpi-detail">plus d'un tiers de l'erreur, incompressible</span>
+        </div>
+    </div>
+    <div class="encadre-definition">
+        <strong>Plancher d'erreur irréductible</strong> — la part de l'erreur qu'aucun modèle, aussi
+        bon soit-il, ne peut supprimer avec les seules variables disponibles ici : deux structures aux
+        caractéristiques identiques peuvent, dans les faits, avoir un statut d'éligibilité différent.
+        Ça ne vient pas d'un défaut du modèle, mais d'une limite de ce que les données permettent de
+        savoir.
+    </div>
+
+    <details class="accordeon" open>
+        <summary>1. Le problème posé, et ce que ce montage permet de mesurer</summary>
+        <div class="accordeon-contenu">
+            <p>
+                Le sujet de ma mission simule une collecte interrompue : les caractéristiques des structures
+                sont connues partout au Gabon, mais le volet réseaux (eau, électricité, fibre) n'est censé
+                être connu que dans la province de l'Estuaire. Il fallait apprendre, sur l'Estuaire, le lien
+                entre les caractéristiques d'une structure et son éligibilité, puis l'appliquer aux huit
+                autres provinces.
+            </p>
+            <p>
+                <strong>Ce que j'ai pu faire, et que la plupart des études de ce genre ne peuvent pas se
+                permettre</strong> : les données que j'utilise sont en réalité complètes sur tout le
+                territoire. J'ai masqué volontairement le volet réseaux hors Estuaire pour simuler le
+                scénario, ce qui m'a permis de comparer mes prédictions à la vraie valeur, gardée de côté
+                pour vérification. J'ai donc pu <em>mesurer</em> l'erreur de transposition, pas seulement
+                l'estimer par hypothèse.
+            </p>
+        </div>
+    </details>
+
+    <details class="accordeon">
+        <summary>2. Choix des variables — pourquoi le GPS et le canton sont exclus</summary>
+        <div class="accordeon-contenu">
+            <p>
+                Pour choisir les variables du modèle, j'ai d'abord mesuré lesquelles étaient les plus liées
+                à l'éligibilité aux réseaux. Les coordonnées GPS et un numéro de téléphone sont ressortis en
+                tête, mais je les ai écartés tous les deux : une coordonnée GPS identifie un lieu, pas une
+                caractéristique transportable d'une province à l'autre (l'Estuaire et les huit autres
+                provinces couvrent des zones géographiques qui ne se recoupent jamais), et le numéro de
+                téléphone est une donnée personnelle sans rapport avec l'éligibilité aux réseaux. J'ai
+                écarté le canton et le village de la structure pour la même raison, une fois vérifié
+                qu'eux non plus ne se recoupent jamais entre l'Estuaire et les autres provinces (aucun des
+                232 cantons observés n'est commun aux deux). Au final, j'ai retenu seize variables : les
+                caractéristiques de la structure, la composition du ménage, et si la localité est raccordée
+                aux réseaux.
+            </p>
+        </div>
+    </details>
+
+    <details class="accordeon">
+        <summary>3. Choix du modèle — six candidats, un retenu</summary>
+        <div class="accordeon-contenu">
+            <p>
+                J'ai comparé six modèles dans les mêmes conditions : régression logistique, arbre de
+                décision, k plus proches voisins, forêt aléatoire, gradient boosting (XGBoost), et un
+                réseau de neurones adapté aux données tabulaires (FT-Transformer). J'ai retenu le gradient
+                boosting : il est en tête ou à égalité avec la forêt aléatoire sur les trois réseaux, et
+                plus rapide à entraîner. Le réseau de neurones n'a jamais dépassé les modèles à base
+                d'arbres de décision — avec aussi peu de variables, l'écart entre les familles de modèles
+                reste de toute façon faible (moins d'un point d'AUC entre le plus simple et le plus
+                complexe).
+            </p>
+            <table>
+                <caption>Performance interne (validation croisée, Estuaire) vs hors domaine (8 autres provinces, contre vérité réelle)</caption>
+                <thead><tr><th scope="col">Réseau</th><th scope="col">AUC interne</th><th scope="col">AUC hors domaine</th></tr></thead>
+                <tbody>
+                    {% for reseau in ['eau', 'électricité', 'fibre'] %}
+                    <tr><th scope="row">{{ reseau | capitalize }}</th>
+                        <td>{{ synthese.auc_niveau1[reseau] }}</td>
+                        <td>{{ synthese.auc_niveau3_hors_domaine[reseau] }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </details>
+
+    <details class="accordeon">
+        <summary>4. Le biais mesuré, et pourquoi sa correction marche sur un réseau mais pas l'autre</summary>
+        <div class="accordeon-contenu">
+            <p>
+                En comparant mes prédictions à la vraie valeur sur les huit provinces, j'ai trouvé un biais
+                systématique : je surestime toujours l'électricité et je sous-estime toujours la fibre,
+                alors que l'eau ne montre pas de biais net dans un sens ou dans l'autre. J'ai testé une
+                repondération des structures d'apprentissage, qui donne plus de poids à celles qui
+                ressemblent le plus à chaque province, pour corriger ce biais.
+            </p>
+            <table>
+                <caption>Erreur absolue moyenne sur les 8 provinces, avant/après repondération</caption>
+                <thead><tr><th scope="col">Réseau</th><th scope="col">Erreur naïve</th><th scope="col">Erreur corrigée</th><th scope="col">Résultat</th></tr></thead>
+                <tbody>
+                    {% for reseau in ['eau', 'électricité', 'fibre'] %}
+                    <tr><th scope="row">{{ reseau | capitalize }}</th>
+                        <td>{{ synthese.erreur_absolue_moyenne_naive_pts[reseau] }} pts</td>
+                        <td>{{ synthese.erreur_absolue_moyenne_corrigee_pts[reseau] }} pts</td>
+                        <td>{% if reseau == 'fibre' %}Correction non retenue{% else %}Correction retenue{% endif %}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p>
+                <strong>Pourquoi la correction marche sur l'électricité mais pas sur la fibre</strong> —
+                c'est le résultat le plus intéressant de mon travail. La repondération corrige seulement un
+                écart de composition, c'est-à-dire le fait que les structures d'une province ne ressemblent
+                pas à celles d'une autre. Si elle réussit sur l'électricité mais échoue sur la fibre, ça
+                veut dire que le biais fibre vient aussi d'autre chose : le lien entre les caractéristiques
+                d'une structure et son éligibilité à la fibre change probablement réellement d'une province
+                à l'autre, sans doute pour des raisons commerciales propres à chaque opérateur, que mes
+                variables ne peuvent pas capter.
+            </p>
+        </div>
+    </details>
+
+    <details class="accordeon">
+        <summary>5. Incertitude — jusqu'où on peut se tromper, et pourquoi</summary>
+        <div class="accordeon-contenu">
+            <p>
+                La calibration de mon modèle, c'est-à-dire l'accord entre la probabilité que j'annonce et
+                la fréquence réelle, est presque parfaite sur l'Estuaire mais se dégrade nettement ailleurs,
+                surtout pour l'électricité (l'erreur de calibration y est multipliée par environ
+                {{ (synthese.ece_hors_domaine['fdsm124'] / synthese.ece_interne['fdsm124']) | round(0) }}).
+                Plus important : même en connaissant parfaitement le profil d'une structure, une part
+                d'erreur reste incompressible, parce que deux structures identiques sur le papier peuvent
+                avoir, dans les faits, un statut différent. Sur la fibre, plus d'un tiers de l'erreur ne
+                peut être réduite par aucun modèle, aussi bon soit-il.
+            </p>
+        </div>
+    </details>
+
+    <details class="accordeon">
+        <summary>6. Et si on avait collecté différemment ?</summary>
+        <div class="accordeon-contenu">
+            <p>
+                J'ai comparé, à volume d'échantillon strictement égal, le choix retenu dans le sujet (une
+                collecte approfondie mais limitée à l'Estuaire) à une alternative : un échantillon plus
+                léger mais réparti sur les 9 provinces.
+            </p>
+            <table>
+                <caption>Erreur absolue moyenne selon le design de collecte</caption>
+                <thead><tr><th scope="col">Réseau</th><th scope="col">Estuaire seul</th><th scope="col">Échantillon multi-provinces</th></tr></thead>
+                <tbody>
+                    {% for reseau in ['eau', 'électricité', 'fibre'] %}
+                    <tr><th scope="row">{{ reseau | capitalize }}</th>
+                        <td>{{ synthese.design_estuaire_pur_erreur_moyenne_pts[reseau] }} pts</td>
+                        <td>{{ synthese.design_multiprovinces_erreur_moyenne_pts[reseau] }} pts</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p>
+                L'alternative l'emporte nettement sur l'électricité et la fibre. C'est cohérent avec une
+                idée bien documentée en recherche (Ben-David et al., 2010) : quelques exemples réels de la
+                zone visée, même en petit nombre, corrigent une part du lien lui-même, ce qu'une
+                repondération seule ne peut pas faire. Pour de futures collectes sous contrainte de temps
+                ou de budget, je recommande un maillage national léger plutôt qu'une collecte exhaustive
+                concentrée sur une seule province.
+            </p>
+        </div>
+    </details>
+
+    <details class="accordeon">
+        <summary>7. Ce qui pèse le plus dans chaque prédiction</summary>
+        <div class="accordeon-contenu">
+            <p>Voici les cinq variables qui pèsent le plus dans chaque prédiction, pour le modèle que j'ai retenu :</p>
+            {% for reseau, vars in importances.items() %}
+            <table>
+                <caption>{{ reseau | capitalize }}</caption>
+                <thead><tr><th scope="col">Variable</th><th scope="col">Importance</th></tr></thead>
+                <tbody>
+                    {% for v in vars %}
+                    <tr><th scope="row">{{ v.variable }}</th><td>{{ (v.importance*100) | round(1) }} %</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endfor %}
+        </div>
+    </details>
+
+    <details class="accordeon">
+        <summary>8. Limites assumées</summary>
+        <div class="accordeon-contenu">
+            <ul>
+                <li>Mon classement des provinces par taux prédit contient déjà 18 à 32 % de paires inversées par rapport à la réalité, sans même de dégradation volontaire. Je ne recommande pas de l'utiliser pour départager finement deux provinces aux taux proches.</li>
+                <li>Le seuil de décision à 0,5 n'est pas le meilleur choix pour ce classement précis ; un seuil plus élevé (0,60-0,75 selon le réseau) l'alignerait mieux sur la réalité, mais je ne l'ai pas appliqué en production, pour garder un seuil standard et facile à expliquer.</li>
+                <li>J'ai testé un scénario de dégradation par atténuation linéaire, qui s'est révélé, par construction mathématique, incapable de faire basculer un classement. Je le signale comme une limite de ma méthode plutôt que de le passer sous silence.</li>
+            </ul>
+        </div>
+    </details>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const geojsonUrl = "{{ url_for('static', filename='departements.geojson') }}";
+    const cibles = {'eau': 'fdsm123', 'electricite': 'fdsm124', 'fibre': 'fdsm125'};
+    const MODELE = "XGBoost (gradient boosting) — 300 arbres, profondeur 7, taux d'apprentissage 0,03";
+    Object.entries(cibles).forEach(([slug, cible]) => {
+        fetch(`/api/carte/erreur/${cible}`).then(r => r.json()).then(donnees => {
+            dessinerCarteChoroplethe(`carte-erreur-${slug}`, geojsonUrl, donnees, {
+                mode: 'divergent',
+                titre: `Écart mesuré (prédit − réel), ${slug}`,
+                seuilRestitution: 10,
+                modele: MODELE,
+                etiquetteValeur: v => `${v.valeur > 0 ? '+' : ''}${v.valeur} pts (n=${v.n})`,
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

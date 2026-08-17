@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block titre %}Résultat — Consultation par structure{% endblock %}
+{% block contenu %}
+<section>
+    <h2>Résultat de l'estimation</h2>
+
+    {% if resultats.hors_support %}
+        <p class="alerte-hors-support" role="alert">
+            <strong>Indicateur « hors support »</strong> — le profil de cette structure n'a pas été
+            suffisamment observé dans les données d'apprentissage (Estuaire). L'estimation ci-dessous
+            extrapole au-delà de ce que le modèle a réellement appris et doit être interprétée avec une
+            prudence renforcée.
+        </p>
+    {% endif %}
+
+    {% set slugs = {'fdsm123': 'eau', 'fdsm124': 'electricite', 'fdsm125': 'fibre'} %}
+    <table>
+        <caption>Éligibilité estimée par réseau</caption>
+        <thead>
+            <tr>
+                <th scope="col">Réseau</th>
+                <th scope="col">Éligibilité estimée</th>
+                <th scope="col">Probabilité</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cible, r in resultats.items() if cible != 'hors_support' %}
+            {% set slug = slugs[cible] %}
+            <tr>
+                <th scope="row">{{ r.reseau | capitalize }}</th>
+                <td>
+                    {% if r.eligible %}
+                        <span class="badge badge-eligible">Éligible</span>
+                    {% else %}
+                        <span class="badge badge-non-eligible">Non éligible</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="barre-probabilite">
+                        <span class="piste"><span class="remplissage" style="width: {{ (r.probabilite * 100) | round(1) }}%; background: var(--serie-{{ slug }});"></span></span>
+                        <span class="valeur">{{ (r.probabilite * 100) | round(1) }} %</span>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Caractéristiques saisies</h3>
+    <table>
+        <caption>Rappel des valeurs saisies</caption>
+        <thead><tr><th scope="col">Variable</th><th scope="col">Valeur</th></tr></thead>
+        <tbody>
+            {% for c in categorical %}
+            <tr><th scope="row">{{ labels[c]['label'] }}</th><td>{{ labels[c]['values'][donnees[c]|int|string] }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="{{ url_for('structure') }}">← Nouvelle estimation</a></p>
+</section>
+{% endblock %}

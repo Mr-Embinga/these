@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titre %}Consultation par structure{% endblock %}
+{% block contenu %}
+<section>
+    <h2>Consultation par structure</h2>
+    <p>Renseignez les caractéristiques de la structure pour estimer son éligibilité aux trois réseaux.</p>
+
+    <form method="post" action="{{ url_for('structure') }}">
+        <fieldset>
+            <legend>Caractéristiques catégorielles</legend>
+            {% for c in categorical %}
+                <div class="champ">
+                    <label for="{{ c }}">{{ labels[c]['label'] }}</label>
+                    <select id="{{ c }}" name="{{ c }}" required>
+                        <option value="" disabled selected>— Choisir —</option>
+                        {% for code, texte in labels[c]['values'].items() %}
+                            <option value="{{ code }}">{{ texte }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endfor %}
+        </fieldset>
+
+        <fieldset>
+            <legend>Composition (nombres, laisser vide si non applicable)</legend>
+            <div class="champ"><label for="fdsm126">Total logements dans la structure</label><input type="number" min="0" id="fdsm126" name="fdsm126"></div>
+            <div class="champ"><label for="fdsm127">Total ménages dans la structure</label><input type="number" min="0" id="fdsm127" name="fdsm127"></div>
+            <div class="champ"><label for="fdsm128">Population dans la structure</label><input type="number" min="0" id="fdsm128" name="fdsm128"></div>
+            <div class="champ"><label for="fdsm213">Personnes dans le ménage</label><input type="number" min="0" id="fdsm213" name="fdsm213"></div>
+            <div class="champ"><label for="fdsm214">Femmes dans le ménage</label><input type="number" min="0" id="fdsm214" name="fdsm214"></div>
+            <div class="champ"><label for="fdsm215">Hommes dans le ménage</label><input type="number" min="0" id="fdsm215" name="fdsm215"></div>
+            <div class="champ"><label for="fdsm216">Personnes de moins de 5 ans</label><input type="number" min="0" id="fdsm216" name="fdsm216"></div>
+            <div class="champ"><label for="fdsm217">Personnes de 5 à 15 ans</label><input type="number" min="0" id="fdsm217" name="fdsm217"></div>
+            <div class="champ"><label for="fdsm218">Personnes de 16 ans ou plus</label><input type="number" min="0" id="fdsm218" name="fdsm218"></div>
+        </fieldset>
+
+        <button type="submit">Estimer l'éligibilité</button>
+    </form>
+</section>
+{% endblock %}

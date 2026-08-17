@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block titre %}Comparaison inter-provinces{% endblock %}
+{% block contenu %}
+<section>
+    <h2>Comparaison inter-provinces</h2>
+    <p>
+        J'ai classé les provinces de la plus proche à la plus éloignée du profil de l'Estuaire. Un écart
+        plus faible indique en général une transposition plus fiable, mais pas systématiquement (voir
+        <a href="{{ url_for('methode') }}">Méthode &amp; validation</a>).
+    </p>
+    <div class="encadre-definition">
+        <strong>Écart de composition</strong> — à quel point les structures de cette province ressemblent
+        (ou non) à celles de l'Estuaire sur leurs caractéristiques (milieu, statut, composition des
+        ménages...). Une seule valeur par province, la même pour les trois réseaux : elle ne dépend pas de
+        ce qui est prédit, seulement du profil des structures. Détail en page
+        <a href="{{ url_for('methode') }}">Méthode &amp; validation</a>.
+    </div>
+
+    <section class="section-cartes">
+        <h3>Taux estimé par département</h3>
+        <p>
+            J'affiche le taux corrigé pour l'eau et l'électricité, où la correction a réduit l'erreur
+            mesurée contre la vraie valeur, et le taux brut pour la fibre, où elle n'a apporté aucun
+            bénéfice (voir <a href="{{ url_for('methode') }}">Méthode &amp; validation</a> pour le détail
+            de cet arbitrage).
+        </p>
+        <div class="rangee-cartes">
+            <div>
+                <h4 style="color: var(--serie-eau-texte);">Eau</h4>
+                <div id="carte-taux-eau" class="conteneur-carte"></div>
+            </div>
+            <div>
+                <h4 style="color: var(--serie-electricite-texte);">Électricité</h4>
+                <div id="carte-taux-electricite" class="conteneur-carte"></div>
+            </div>
+            <div>
+                <h4 style="color: var(--serie-fibre-texte);">Fibre</h4>
+                <div id="carte-taux-fibre" class="conteneur-carte"></div>
+            </div>
+        </div>
+
+        <details class="bascule-table">
+            <summary>Voir les données par département en table (équivalent accessible des cartes)</summary>
+            <table data-table-triable>
+                <caption>Taux estimé par département et par réseau</caption>
+                <thead><tr><th scope="col">Département</th><th scope="col">Réseau</th><th scope="col">Effectif</th><th scope="col">Type</th><th scope="col">Taux</th></tr></thead>
+                <tbody>
+                    {% for r in taux_dept %}
+                    <tr>
+                        <th scope="row">{{ r.nom }}</th>
+                        <td>{{ r.reseau | capitalize }}</td>
+                        <td>{{ r.n }}</td>
+                        <td>{{ r.type }}</td>
+                        <td>{{ r.taux }} %</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </details>
+    </section>
+
+    <h3>Vue par province</h3>
+    <p>
+        Survolez (ou activez au clavier) un réseau dans la légende, ou une barre, pour l'isoler sur
+        toutes les provinces et griser les deux autres.
+    </p>
+    <figure>
+        <figcaption><strong>Taux estimé par province, pour les trois réseaux</strong> — triées par proximité avec l'Estuaire</figcaption>
+        <div id="graphique-provinces"></div>
+    </figure>
+
+    <details class="bascule-table">
+        <summary>Voir les données en table (équivalent accessible du graphique)</summary>
+        <table data-table-triable>
+            <caption>Taux estimé par province, pour les trois réseaux</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Province</th>
+                    <th scope="col">Eau</th>
+                    <th scope="col">Électricité</th>
+                    <th scope="col">Fibre</th>
+                    <th scope="col">Écart de composition avec l'Estuaire</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in lignes %}
+                <tr>
+                    <th scope="row">{{ l.province }}</th>
+                    <td>{{ (l.eau_pct ~ ' %') if l.eau_pct is not none else '—' }}</td>
+                    <td>{{ (l.electricite_pct ~ ' %') if l.electricite_pct is not none else '—' }}</td>
+                    <td>{{ (l.fibre_pct ~ ' %') if l.fibre_pct is not none else '—' }}</td>
+                    <td>{{ l.ecart_composition }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </details>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const geojsonUrl = "{{ url_for('static', filename='departements.geojson') }}";
+    const cibles = {'eau': ['fdsm123', '#2a78d6'], 'electricite': ['fdsm124', '#eb6834'], 'fibre': ['fdsm125', '#1baf7a']};
+    const MODELE_CORRIGE = "XGBoost repondéré (poids d'importance tronqués à 10) — 300 arbres, profondeur 7, taux d'apprentissage 0,03";
+    const MODELE_NAIF = "XGBoost naïf (sans repondération) — 300 arbres, profondeur 7, taux d'apprentissage 0,03";
+    Object.entries(cibles).forEach(([slug, [cible, couleur]]) => {
+        fetch(`/api/carte/taux/${cible}`).then(r => r.json()).then(donnees => {
+            const corrige = Object.values(donnees).some(v => v.corrige);
+            dessinerCarteChoroplethe(`carte-taux-${slug}`, geojsonUrl, donnees, {
+                mode: 'sequentiel',
+                couleurBase: couleur,
+                titre: `Taux estimé, ${slug}`,
+                seuilRestitution: 10,
+                modele: corrige ? MODELE_CORRIGE : MODELE_NAIF,
+                etiquetteValeur: v => `${v.valeur} % (n=${v.n})`,
+            });
+        });
+    });
+
+    const donneesProvinces = {{ lignes | tojson }}.map(l => ({
+        province: l.province, eau: l.eau_pct, electricite: l.electricite_pct, fibre: l.fibre_pct
+    }));
+    dessinerGraphiqueBarresGroupees('graphique-provinces', donneesProvinces);
+});
+</script>
+{% endblock %}

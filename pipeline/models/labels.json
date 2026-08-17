@@ -1,0 +1,9 @@
+{
+ "fdsm111": {"label": "Milieu de résidence", "values": {"1": "Urbain", "2": "Rural"}},
+ "fdsm121": {"label": "Statut de la structure", "values": {"1": "Occupée", "2": "Occupée, sans occupant présent", "3": "Inoccupée", "4": "En construction / chantier"}},
+ "fdsm122": {"label": "Structure dans une clôture", "values": {"1": "Oui", "2": "Non"}},
+ "fdsm201": {"label": "Usage de la structure", "values": {"1": "Logement", "2": "Administration", "3": "Commerce", "4": "Éducation", "5": "Santé", "6": "Hébergement", "7": "Sport et loisirs", "8": "Restauration", "9": "Socioculturel", "10": "Tourisme", "11": "Station service", "12": "Mairie / état-civil", "98": "Autre"}},
+ "fdsm202": {"label": "Statut du logement", "values": {"1": "Occupé, occupants présents", "2": "Occupé, occupants absents", "3": "Occupé, occupants présents mais refus", "4": "Inoccupé"}},
+ "cl108a": {"label": "Localité raccordée au réseau électrique", "values": {"0": "Inconnu / non renseigné", "1": "Oui", "2": "Non"}},
+ "cl108b": {"label": "Localité raccordée au réseau d'eau", "values": {"0": "Inconnu / non renseigné", "1": "Oui", "2": "Non"}}
+}

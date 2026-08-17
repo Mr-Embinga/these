@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block titre %}Traitement par lot{% endblock %}
+{% block contenu %}
+<section>
+    <h2>Traitement par lot</h2>
+    <p>
+        Importez un fichier CSV, XLSX ou JSON contenant une structure par ligne. Les colonnes attendues
+        sont :
+    </p>
+    <p><code>{{ features | join(', ') }}</code></p>
+    <p>Le fichier téléchargé en retour contient, pour chaque structure, l'éligibilité estimée et la
+        probabilité pour les trois réseaux, ainsi que l'indicateur « hors support ».</p>
+
+    <form method="post" action="{{ url_for('lot') }}" enctype="multipart/form-data">
+        <div class="champ">
+            <label for="fichier">Fichier de structures (CSV, XLSX ou JSON)</label>
+            <input type="file" id="fichier" name="fichier" accept=".csv,.xlsx,.xls,.json" required>
+        </div>
+        <button type="submit">Lancer le traitement par lot</button>
+    </form>
+</section>
+{% endblock %}

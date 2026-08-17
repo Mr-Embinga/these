@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titre %}Accueil — Éligibilité aux réseaux{% endblock %}
+{% block contenu %}
+<section>
+    <h2>Présentation</h2>
+    <p>
+        J'ai construit cette application pour estimer, structure par structure, si elle est raccordable
+        à l'eau, à l'électricité ou à la fibre optique. J'ai appris cette relation sur les structures de
+        la province de l'Estuaire, la seule où l'information sur les réseaux était disponible, puis je
+        l'ai appliquée aux huit autres provinces du Gabon.
+    </p>
+    <p>
+        Les chiffres que vous verrez sont des estimations, pas des données officielles du recensement.
+        Chaque résultat est accompagné d'une marge d'erreur, mesurée province par province et réseau par
+        réseau, pour que vous sachiez jusqu'où leur faire confiance.
+    </p>
+    <p>
+        J'ai pu vérifier ces estimations contre la réalité, province par province, ce qui n'est presque
+        jamais possible pour ce type d'outil : le détail est expliqué en page
+        <a href="{{ url_for('methode') }}"><strong>Méthode &amp; validation</strong></a>, avec les chiffres
+        de fiabilité par réseau et les limites que j'assume.
+    </p>
+</section>
+<section>
+    <h2>Fonctionnalités disponibles</h2>
+    <ul>
+        <li><a href="{{ url_for('structure') }}">Consultation par structure</a> — saisir les caractéristiques d'une structure et obtenir son éligibilité aux trois réseaux.</li>
+        <li><a href="{{ url_for('lot') }}">Traitement par lot</a> — importer un fichier de plusieurs structures et exporter les résultats.</li>
+        <li><a href="{{ url_for('provinces') }}">Vue provinciale</a> — taux estimé par province et par réseau, avec marge d'incertitude et écart de composition.</li>
+        <li><a href="{{ url_for('comparaison') }}">Comparaison inter-provinces</a> — tableau de synthèse entre provinces.</li>
+    </ul>
+</section>
+{% endblock %}

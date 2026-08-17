@@ -1,0 +1,17 @@
+# Blueprint Render (https://render.com/docs/blueprint-spec) -- deploiement en un clic une fois
+# le depot connecte : Render lit ce fichier automatiquement, pas de configuration manuelle a
+# refaire dans le tableau de bord.
+services:
+  - type: web
+    name: eligibilite-reseaux-bcr
+    runtime: python
+    plan: free
+    buildCommand: pip install -r app/requirements.txt
+    startCommand: cd app && gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: FORCER_COOKIE_SECURE
+        value: "1"
+      - key: PYTHON_VERSION
+        value: "3.12.7"

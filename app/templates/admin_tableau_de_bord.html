@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block titre %}Back-office — Métadonnées du modèle{% endblock %}
+{% block contenu %}
+<section>
+    <h2>Back-office : métadonnées du modèle</h2>
+    <p>
+        Espace administrateur, non exposé sur les pages publiques : détail des hyperparamètres,
+        des jeux de données et la comparaison complète des six modèles testés (le public ne voit
+        que le modèle retenu, en page <a href="{{ url_for('methode') }}">Méthode &amp; validation</a>).
+        <a href="{{ url_for('admin_deconnexion') }}">Se déconnecter</a>.
+    </p>
+
+    <h3>Modèle retenu</h3>
+    <table>
+        <tbody>
+            <tr><th scope="row">Algorithme</th><td>Gradient boosting (XGBoost)</td></tr>
+            <tr><th scope="row">Hyperparamètres</th><td>{{ hyperparametres or '—' }}</td></tr>
+            <tr><th scope="row">Date d'entraînement (fichiers modèle)</th>
+                <td>{{ date_entrainement.strftime('%Y-%m-%d %H:%M') if date_entrainement else '—' }}</td></tr>
+            <tr><th scope="row">Seuil de restitution (secret statistique)</th><td>{{ seuil }} structures</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Jeux de données</h3>
+    <table>
+        <tbody>
+            <tr><th scope="row">Apprentissage (Estuaire)</th>
+                <td>{{ '{:,}'.format(tailles.estuaire).replace(',', ' ') if tailles.estuaire else '—' }} structures</td></tr>
+            <tr><th scope="row">Prédiction (huit autres provinces)</th>
+                <td>{{ '{:,}'.format(tailles.autres_provinces).replace(',', ' ') if tailles.autres_provinces else '—' }} structures</td></tr>
+        </tbody>
+    </table>
+
+    <h3>Comparaison complète des modèles testés (validation interne, niveau 1)</h3>
+    <table data-table-triable>
+        <caption>Accuracy, précision, rappel, F1 et AUC par modèle et par réseau</caption>
+        <thead>
+            <tr>
+                <th scope="col">Réseau</th>
+                <th scope="col">Modèle</th>
+                <th scope="col">Accuracy</th>
+                <th scope="col">Précision</th>
+                <th scope="col">Rappel</th>
+                <th scope="col">F1</th>
+                <th scope="col">AUC</th>
+                <th scope="col">Temps (s)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for l in comparaison %}
+            <tr>
+                <th scope="row">{{ l.cible_libelle | capitalize }}</th>
+                <td>{{ l.modele }}</td>
+                <td>{{ '%.3f' | format(l.accuracy) }}</td>
+                <td>{{ '%.3f' | format(l.precision) }}</td>
+                <td>{{ '%.3f' | format(l.recall) }}</td>
+                <td>{{ '%.3f' | format(l.f1) }}</td>
+                <td>{{ '%.3f' | format(l.auc) }}</td>
+                <td>{{ '%.1f' | format(l.temps_s) if l.temps_s else '—' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Variables du modèle</h3>
+    <p>{{ config.features | join(', ') }}</p>
+</section>
+{% endblock %}

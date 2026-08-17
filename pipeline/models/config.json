@@ -1,0 +1,62 @@
+{
+  "features": [
+    "fdsm121",
+    "fdsm111",
+    "fdsm202",
+    "fdsm122",
+    "fdsm201",
+    "cl108a",
+    "cl108b",
+    "fdsm126",
+    "fdsm127",
+    "fdsm128",
+    "fdsm213",
+    "fdsm214",
+    "fdsm215",
+    "fdsm216",
+    "fdsm217",
+    "fdsm218"
+  ],
+  "categorical": [
+    "fdsm121",
+    "fdsm111",
+    "fdsm202",
+    "fdsm122",
+    "fdsm201",
+    "cl108a",
+    "cl108b"
+  ],
+  "continuous": [
+    "fdsm126",
+    "fdsm127",
+    "fdsm128",
+    "fdsm213",
+    "fdsm214",
+    "fdsm215",
+    "fdsm216",
+    "fdsm217",
+    "fdsm218"
+  ],
+  "targets": [
+    "fdsm123",
+    "fdsm124",
+    "fdsm125"
+  ],
+  "target_labels": {
+    "fdsm123": "eau",
+    "fdsm124": "électricité",
+    "fdsm125": "fibre"
+  },
+  "provinces": {
+    "1": "Estuaire",
+    "2": "Haut-Ogooué",
+    "3": "Moyen-Ogooué",
+    "4": "Ngounié",
+    "5": "Nyanga",
+    "6": "Ogooué-Ivindo",
+    "7": "Ogooué-Lolo",
+    "8": "Ogooué-Maritime",
+    "9": "Woleu-Ntem"
+  },
+  "seuil_restitution": 10
+}

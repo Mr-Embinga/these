@@ -1,0 +1,22 @@
+# Donnees source volumineuses / personnelles -- jamais versionnees, jamais deployees.
+# L'application (these/app) ne les lit pas au demarrage (voir app.py) : uniquement des
+# artefacts deja agreges (pipeline/models, pipeline/data/*.csv).
+pipeline/data/*.parquet
+
+# Artefacts SQL (banc d'essai referentiel 1.4) -- livrable du ZIP de depot, pas necessaire
+# au fonctionnement du site deploye. Le dump depasse de toute facon la limite de taille de
+# fichier GitHub pour un push standard (100 Mo).
+sql/*.db
+sql/*.sql
+
+# Dossier de these (redaction en cours) -- depot separe de ce depot de deploiement applicatif.
+dossier/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Journal applicatif (regenere a chaque execution, non signifiant hors contexte)
+app/journal_admin.log

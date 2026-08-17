@@ -1,0 +1,47 @@
+{
+  "auc_niveau1": {
+    "eau": 0.76,
+    "électricité": 0.904,
+    "fibre": 0.698
+  },
+  "auc_niveau3_hors_domaine": {
+    "eau": 0.79,
+    "électricité": 0.862,
+    "fibre": 0.694
+  },
+  "erreur_absolue_moyenne_naive_pts": {
+    "eau": 4.39,
+    "électricité": 10.22,
+    "fibre": 10.44
+  },
+  "erreur_absolue_moyenne_corrigee_pts": {
+    "eau": 3.6,
+    "électricité": 6.55,
+    "fibre": 10.04
+  },
+  "ece_interne": {
+    "fdsm123": 0.0036,
+    "fdsm124": 0.0017,
+    "fdsm125": 0.0048
+  },
+  "ece_hors_domaine": {
+    "fdsm123": 0.0308,
+    "fdsm124": 0.064,
+    "fdsm125": 0.0915
+  },
+  "erreur_bayes_irreductible": {
+    "fdsm123": 0.242,
+    "fdsm124": 0.087,
+    "fdsm125": 0.362
+  },
+  "design_multiprovinces_erreur_moyenne_pts": {
+    "eau": 3.72,
+    "électricité": 2.57,
+    "fibre": 5.89
+  },
+  "design_estuaire_pur_erreur_moyenne_pts": {
+    "eau": 3.49,
+    "électricité": 6.82,
+    "fibre": 10.4
+  }
+}

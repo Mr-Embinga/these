@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block titre %}Vue provinciale{% endblock %}
+{% block contenu %}
+<section>
+    <h2>Vue provinciale</h2>
+    <p>
+        Voici le taux d'éligibilité que j'estime pour chaque province et chaque réseau, avec la marge
+        d'erreur mesurée sur des sous-groupes de structures et l'écart entre le profil de cette province
+        et celui de l'Estuaire.
+    </p>
+    <div class="encadre-definition">
+        <strong>Seuil de restitution</strong> — je masque volontairement les taux calculés sur moins de
+        {{ seuil }} structures, en protection du secret statistique : publier un chiffre basé sur trop
+        peu de cas pourrait permettre de retrouver une structure précise.
+    </div>
+    <p>
+        <strong>Pourquoi deux façons de calculer le taux ?</strong> Sur l'eau et l'électricité, j'ai testé
+        une correction qui donne plus de poids aux structures de l'Estuaire ressemblant le plus à chaque
+        province, et elle a réduit l'erreur mesurée contre la vraie valeur (détail en page
+        <a href="{{ url_for('methode') }}">Méthode</a>) : le taux affiché est donc corrigé. Sur la fibre,
+        cette même correction n'a apporté aucun bénéfice, et l'a parfois aggravée, donc j'ai gardé le
+        taux brut, avec une marge d'erreur plus large plutôt qu'une précision que je ne peux pas garantir.
+    </p>
+    <div class="encadre-definition">
+        <strong>Repondération</strong> — je donne plus de poids, pendant l'entraînement, aux structures de
+        l'Estuaire qui ressemblent le plus à la province visée, pour compenser le fait que les deux n'ont
+        pas la même composition. Détail complet en page
+        <a href="{{ url_for('methode') }}">Méthode &amp; validation</a>.
+    </div>
+
+    <section class="section-cartes">
+        <h3>Où peut-on faire confiance à l'estimation ?</h3>
+        <div class="encadre-definition">
+            <strong>Écart de composition</strong> — une seule mesure par province, valable pour les trois
+            réseaux : je compare le profil des structures de cette province (milieu, statut, composition
+            des ménages...) à celui de l'Estuaire, sans tenir compte de ce qui est prédit. Le même écart
+            s'applique à l'eau, l'électricité et la fibre, puisqu'il ne dépend que des caractéristiques
+            des structures, jamais du réseau observé (détail en page
+            <a href="{{ url_for('methode') }}">Méthode &amp; validation</a>).
+        </div>
+        <p>
+            Plus la teinte est soutenue, plus le profil de la province diffère de celui de l'Estuaire.
+            En général, la transposition y est alors plus risquée, même si ce n'est pas systématique.
+        </p>
+        <div id="carte-ecart" class="conteneur-carte conteneur-carte-centree"></div>
+    </section>
+
+    <table data-table-triable>
+        <caption>Taux estimé par province et par réseau</caption>
+        <thead>
+            <tr>
+                <th scope="col">Province</th>
+                <th scope="col">Écart de composition</th>
+                {% for reseau in reseaux %}
+                <th scope="col">{{ reseau | capitalize }} — taux</th>
+                <th scope="col">{{ reseau | capitalize }} — marge</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in tableau %}
+            <tr>
+                <th scope="row">{{ r.province }}</th>
+                <td>{{ r.ecart_composition | round(3) }}</td>
+                {% for reseau in reseaux %}
+                <td>{{ r[reseau].taux }}<br><span class="texte-detail-cellule">{{ r[reseau].type }}</span></td>
+                <td>{{ r[reseau].marge }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    fetch('/api/carte/ecart').then(r => r.json()).then(donnees => {
+        dessinerCarteChoroplethe('carte-ecart', "{{ url_for('static', filename='provinces.geojson') }}", donnees, {
+            mode: 'sequentiel',
+            couleurBase: '#4a3aa7',
+            domaineSequentiel: [10, 20],
+            formatLegende: v => v.toFixed(0) + ' (JSD ×100)',
+            titre: 'Écart de composition avec l\'Estuaire — une valeur par province, commune aux trois réseaux',
+            seuilRestitution: 0,
+            modele: 'Forêt aléatoire (test de séparabilité, référentiel 1.2) — 200 arbres, profondeur 8',
+            etiquetteValeur: v => `JSD = ${(v.valeur/100).toFixed(3)} (n=${v.n})`,
+        });
+    });
+});
+</script>
+{% endblock %}

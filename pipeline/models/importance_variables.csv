@@ -1,0 +1,16 @@
+reseau,variable,importance
+eau,Statut de la structure,0.6533
+eau,Localité raccordée au réseau d'eau,0.2114
+eau,Structure dans une clôture,0.0293
+eau,Localité raccordée au réseau électrique,0.0266
+eau,Milieu de résidence,0.0233
+électricité,Statut de la structure,0.9453
+électricité,Usage de la structure,0.0129
+électricité,Statut du logement,0.0076
+électricité,Milieu de résidence,0.0074
+électricité,Localité raccordée au réseau d'eau,0.0072
+fibre,Structure dans une clôture,0.4166
+fibre,Statut de la structure,0.3345
+fibre,Usage de la structure,0.0701
+fibre,Localité raccordée au réseau d'eau,0.0535
+fibre,Statut du logement,0.0394

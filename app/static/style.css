@@ -1,0 +1,719 @@
+/* Palette a contraste eleve (WCAG 2.1 AA, ratio >= 4.5:1 sur le texte courant) */
+:root {
+    --couleur-texte: #1a1a1a;
+    --couleur-fond: #ffffff;
+    --couleur-accent: #0b4f6c;
+    --couleur-accent-fonce: #063a50;
+    --couleur-bordure: #6b7280;
+    --couleur-alerte-fond: #fff3cd;
+    --couleur-alerte-texte: #664400;
+    --couleur-erreur-fond: #fde8e8;
+    --couleur-erreur-texte: #9b1c1c;
+
+    /* Palette de visualisation (dataviz skill -- references/palette.md), 3 premiers slots
+       categoriels : valides toutes-paires en clair et en sombre. */
+    --surface-1:       #fcfcfb;
+    --texte-primaire:  #0b0b0b;
+    --texte-secondaire:#52514e;
+    --texte-attenue:   #6b6960;  /* #898781 mesure a 3.5:1 sur fond clair (< 4.5:1 exige, WCAG AA) -- assombri, audit axe-core 2026-08-17 */
+    --grille:          #e1e0d9;
+    --serie-eau:        #2a78d6;  /* slot 1, bleu */
+    --serie-electricite:#eb6834;  /* slot 2, orange */
+    --serie-fibre:      #1baf7a;  /* slot 3, aqua */
+
+    /* Variantes assombries des memes teintes, reservees au TEXTE (titres colores) sur fond clair
+       -- les couleurs de la palette ci-dessus sont validees pour des aplats (barres, puces de
+       legende, cartes), pas pour du texte : en texte gras 16px sur fond clair, elles ne passaient
+       que 2.7 a 4.3:1 (audit axe-core 2026-08-17), sous le seuil AA de 4.5:1. */
+    --serie-eau-texte:         #1f66bd;
+    --serie-electricite-texte: #b34e1f;
+    --serie-fibre-texte:       #0f7a52;
+
+    /* ---- Echelle d'espacement -- rythme vertical/horizontal coherent dans toute l'application,
+       plutot que des valeurs ad hoc dispersees au fil des composants. ---- */
+    --espace-1: 0.25rem;
+    --espace-2: 0.5rem;
+    --espace-3: 0.75rem;
+    --espace-4: 1rem;
+    --espace-5: 1.5rem;
+    --espace-6: 2rem;
+    --espace-7: 3rem;
+
+    /* ---- Rayons et ombres -- un seul jeu de valeurs reutilise partout (cartes, boutons,
+       encadres) au lieu d'un rayon different par composant. ---- */
+    --rayon-sm: 6px;
+    --rayon-md: 10px;
+    --ombre-sm: 0 1px 2px rgba(15, 23, 30, 0.06), 0 1px 1px rgba(15, 23, 30, 0.04);
+    --ombre-md: 0 4px 14px rgba(15, 23, 30, 0.08), 0 1px 3px rgba(15, 23, 30, 0.06);
+    --ombre-header: 0 2px 10px rgba(0, 0, 0, 0.18);
+
+    --transition: 160ms ease;
+    --lien-soulignement: rgba(11, 79, 108, 0.35);
+    --couleur-titre: var(--couleur-accent-fonce);
+}
+/* Etat systeme (aucun choix explicite via le bouton de bascule) : suit prefers-color-scheme,
+   sauf si l'utilisateur a explicitement force le clair via le bouton (voir bloc [data-theme]
+   plus bas). */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --couleur-texte: #f2f2f0;
+        --couleur-fond: #14161a;
+        --couleur-accent: #4fa3c9;
+        --couleur-accent-fonce: #0a2b3a;
+        --couleur-bordure: #5a5f66;
+        --surface-1:        #1a1a19;
+        --texte-primaire:   #ffffff;
+        --texte-secondaire: #c3c2b7;
+        --texte-attenue:    #898781;
+        --grille:           #2c2c2a;
+        --serie-eau:        #3987e5;
+        --serie-electricite:#d95926;
+        --serie-fibre:      #199e70;
+        /* Sur fond sombre, les teintes vives d'origine passent deja largement le contraste AA en
+           texte -- pas besoin de variante assombrie, on reutilise les memes. */
+        --serie-eau-texte:         #3987e5;
+        --serie-electricite-texte:#e2712f;  /* eclairci vs. la teinte de remplissage : #d95926 ne
+                                                laissait qu'une marge de contraste trop faible sur
+                                                fond sombre (~4,48:1, calcul manuel, seuil 4,5:1) */
+        --serie-fibre-texte:      #199e70;
+
+        /* Les ombres portees se voient mal sur fond sombre et peuvent creer un halo disgracieux --
+           assombries et resserrees plutot que supprimees, pour garder un minimum de profondeur. */
+        --ombre-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+        --ombre-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+        --ombre-header: 0 2px 10px rgba(0, 0, 0, 0.5);
+        --lien-soulignement: rgba(79, 163, 201, 0.4);  /* derive de --couleur-accent sombre (#4fa3c9),
+                                                            pas de la teinte claire (#0b4f6c) -- sinon
+                                                            soulignement quasi invisible sur fond sombre */
+        /* --couleur-accent-fonce (#0a2b3a) sert de fond d'entete, pas de texte -- en couleur de
+           titre sur fond sombre (#14161a) il ne restait qu'un contraste de 1,22:1 (axe-core),
+           quasi invisible. Le titre reprend la teinte d'accent claire, deja validee pour le texte. */
+        --couleur-titre: var(--couleur-accent);
+    }
+}
+
+/* Etat force explicitement via le bouton de bascule (data-theme pose par static/theme.js,
+   persiste en localStorage) -- l'emporte sur prefers-color-scheme dans les deux sens. Memes
+   valeurs que le bloc media ci-dessus. */
+:root[data-theme="dark"] {
+    --couleur-texte: #f2f2f0;
+    --couleur-fond: #14161a;
+    --couleur-accent: #4fa3c9;
+    --couleur-accent-fonce: #0a2b3a;
+    --couleur-bordure: #5a5f66;
+    --surface-1:        #1a1a19;
+    --texte-primaire:   #ffffff;
+    --texte-secondaire: #c3c2b7;
+    --texte-attenue:    #898781;
+    --grille:           #2c2c2a;
+    --serie-eau:        #3987e5;
+    --serie-electricite:#d95926;
+    --serie-fibre:      #199e70;
+    --serie-eau-texte:         #3987e5;
+    --serie-electricite-texte:#e2712f;
+    --serie-fibre-texte:      #199e70;
+    --ombre-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --ombre-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+    --ombre-header: 0 2px 10px rgba(0, 0, 0, 0.5);
+    --lien-soulignement: rgba(79, 163, 201, 0.4);
+    --couleur-titre: var(--couleur-accent);
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    font-size: 1rem;
+    color: var(--couleur-texte);
+    background: var(--couleur-fond);
+    margin: 0;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+
+.lien-evitement {
+    position: absolute;
+    left: -999px;
+    top: 0;
+    background: var(--couleur-accent);
+    color: #fff;
+    padding: var(--espace-2) var(--espace-4);
+    z-index: 100;
+    border-radius: 0 0 var(--rayon-sm) 0;
+}
+.lien-evitement:focus {
+    left: 0;
+}
+
+header {
+    background: var(--couleur-fond);
+    color: var(--texte-primaire);
+    border-bottom: 1px solid var(--grille);
+    box-shadow: var(--ombre-sm);
+    position: relative;
+    z-index: 10;
+}
+.bandeau-avertissement {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-2);
+    background: var(--surface-1);
+    color: var(--texte-secondaire);
+    padding: var(--espace-2) var(--espace-5);
+    margin: 0;
+    font-weight: 500;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--grille);
+}
+.bandeau-avertissement .icone-info {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    fill: var(--couleur-accent);
+}
+.entete-contenu {
+    padding: var(--espace-4) var(--espace-5);
+}
+.entete-barre {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espace-4);
+    flex-wrap: wrap;
+}
+header h1 {
+    margin: 0 0 var(--espace-3) 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--couleur-titre);
+    display: flex;
+    align-items: center;
+    gap: var(--espace-2);
+}
+header h1::before {
+    content: "";
+    display: inline-block;
+    width: 0.6rem;
+    height: 1.6rem;
+    background: var(--couleur-accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.bouton-theme {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espace-2);
+    background: var(--surface-1);
+    color: var(--texte-secondaire);
+    border: 1px solid var(--grille);
+    padding: var(--espace-2) var(--espace-3);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: none;
+    flex-shrink: 0;
+    transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+.bouton-theme:hover { background: var(--grille); color: var(--texte-primaire); transform: none; box-shadow: none; }
+.bouton-theme:focus-visible { outline: 3px solid #ffbf47; outline-offset: 2px; }
+.bouton-theme svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+.bouton-theme .icone-sombre { display: none; }
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .bouton-theme .icone-clair { display: none; }
+    :root:not([data-theme="light"]) .bouton-theme .icone-sombre { display: block; }
+}
+:root[data-theme="dark"] .bouton-theme .icone-clair { display: none; }
+:root[data-theme="dark"] .bouton-theme .icone-sombre { display: block; }
+
+nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-1);
+    padding: 0;
+    margin: var(--espace-3) 0 0 0;
+}
+nav a {
+    color: var(--texte-secondaire);
+    text-decoration: none;
+    padding: var(--espace-2) var(--espace-3);
+    border-radius: var(--rayon-sm);
+    display: inline-block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background var(--transition), color var(--transition);
+}
+nav a:hover {
+    background: var(--surface-1);
+    color: var(--couleur-accent);
+}
+nav a[aria-current="page"] {
+    background: var(--couleur-accent);
+    color: #fff;
+}
+nav a:hover, nav a:focus-visible, a:hover, a:focus-visible {
+    outline: 3px solid #ffbf47;
+    outline-offset: 2px;
+}
+
+a {
+    color: var(--couleur-accent);
+    text-decoration-color: var(--lien-soulignement);
+    transition: text-decoration-color var(--transition);
+}
+a:hover { text-decoration-color: currentColor; }
+
+main {
+    max-width: 90rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: var(--espace-5) var(--espace-6);
+    box-sizing: border-box;
+}
+@media (max-width: 40rem) {
+    main { padding: var(--espace-4); }
+}
+
+.messages { margin-bottom: var(--espace-4); }
+
+/* ---- Rangee de cartes/blocs -- grille fluide, pas de flexbox a seuil de wrap fige ----
+   auto-fit + minmax recalcule le nombre de colonnes selon la largeur reelle disponible :
+   3 par ligne sur desktop large, 2 puis 1 en se resserrant, sans jamais laisser un "2+1"
+   desequilibre comme le ferait flex-wrap avec des flex:1 individuels. */
+.rangee-cartes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--espace-5);
+    align-items: start;
+}
+
+h2 {
+    color: var(--couleur-titre);
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--espace-4) 0;
+}
+h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--texte-primaire);
+    margin: var(--espace-6) 0 var(--espace-3) 0;
+}
+h4 {
+    font-size: 1.02rem;
+    font-weight: 700;
+    margin: 0 0 var(--espace-2) 0;
+}
+
+fieldset {
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-sm);
+    margin-bottom: var(--espace-5);
+    padding: var(--espace-4);
+}
+legend { font-weight: 700; padding: 0 var(--espace-2); }
+
+.champ {
+    margin-bottom: var(--espace-4);
+    display: flex;
+    flex-direction: column;
+    max-width: 28rem;
+}
+.champ label { font-weight: 600; margin-bottom: var(--espace-1); }
+.champ input, .champ select {
+    padding: var(--espace-2) var(--espace-3);
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-sm);
+    font-size: 1rem;
+    background: var(--couleur-fond);
+    color: var(--couleur-texte);
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+.champ input:hover, .champ select:hover { border-color: var(--couleur-accent); }
+.champ input:focus, .champ select:focus {
+    outline: none;
+    border-color: var(--couleur-accent);
+    box-shadow: 0 0 0 3px rgba(11, 79, 108, 0.18);
+}
+.champ input[type="file"] {
+    padding: var(--espace-2);
+    cursor: pointer;
+}
+.champ input[type="file"]::file-selector-button {
+    background: var(--couleur-accent);
+    color: #fff;
+    border: none;
+    padding: var(--espace-2) var(--espace-3);
+    border-radius: var(--rayon-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: var(--espace-3);
+    transition: background var(--transition);
+}
+.champ input[type="file"]::file-selector-button:hover { background: var(--couleur-accent-fonce); }
+
+button {
+    background: var(--couleur-accent);
+    color: #fff;
+    border: none;
+    padding: var(--espace-3) var(--espace-5);
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--rayon-sm);
+    cursor: pointer;
+    box-shadow: var(--ombre-sm);
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+button:hover { background: var(--couleur-accent-fonce); transform: translateY(-1px); box-shadow: var(--ombre-md); }
+button:active { transform: translateY(0); box-shadow: var(--ombre-sm); }
+button:focus-visible { outline: 3px solid #ffbf47; outline-offset: 2px; }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: var(--espace-4) 0;
+    overflow-x: auto;
+    display: block;
+    font-variant-numeric: tabular-nums;
+}
+caption { text-align: left; font-weight: 700; margin-bottom: var(--espace-2); color: var(--texte-primaire); }
+th, td {
+    border: 1px solid var(--grille);
+    padding: var(--espace-2) var(--espace-3);
+    text-align: left;
+}
+th { background: var(--surface-1); color: var(--texte-primaire); font-weight: 700; }
+tbody tr { transition: background var(--transition); }
+tbody tr:hover { background: var(--surface-1); }
+table[data-table-triable] thead th { cursor: pointer; }
+table[data-table-triable] thead th:focus-visible { outline: 3px solid #ffbf47; outline-offset: -2px; }
+table[data-table-triable] thead th::after { content: ' \21C5'; color: var(--texte-attenue); font-size: 0.8em; }
+table[data-table-triable] thead th[aria-sort="ascending"]::after { content: ' \2191'; color: var(--couleur-accent); }
+table[data-table-triable] thead th[aria-sort="descending"]::after { content: ' \2193'; color: var(--couleur-accent); }
+
+.texte-detail-cellule { font-size: 0.78rem; color: var(--texte-attenue); }
+
+.alerte-hors-support {
+    background: var(--couleur-alerte-fond);
+    color: var(--couleur-alerte-texte);
+    border: 1px solid #e0b400;
+    border-radius: var(--rayon-sm);
+    padding: var(--espace-3) var(--espace-4);
+}
+
+.message-erreur {
+    background: var(--couleur-erreur-fond);
+    color: var(--couleur-erreur-texte);
+    border: 1px solid #d33;
+    border-radius: var(--rayon-sm);
+    padding: var(--espace-2) var(--espace-4);
+}
+
+footer {
+    margin-top: var(--espace-7);
+    padding: var(--espace-4) var(--espace-5);
+    color: var(--texte-attenue);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--grille);
+}
+
+code {
+    background: var(--surface-1);
+    border: 1px solid var(--grille);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    word-break: break-word;
+    font-size: 0.92em;
+}
+
+/* ---- Badges d'eligibilite (page resultat) ---- */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+.badge-eligible { background: rgba(27, 175, 122, 0.15); color: var(--serie-fibre-texte); }
+.badge-non-eligible { background: var(--surface-1); color: var(--texte-secondaire); border: 1px solid var(--grille); }
+
+.barre-probabilite {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-2);
+    min-width: 10rem;
+}
+.barre-probabilite .piste {
+    flex-grow: 1;
+    background: var(--grille);
+    border-radius: 4px;
+    height: 10px;
+    overflow: hidden;
+}
+.barre-probabilite .remplissage { display: block; height: 10px; border-radius: 4px; }
+.barre-probabilite .valeur { font-size: 0.88rem; font-weight: 600; white-space: nowrap; }
+
+/* ---- Cartes de chiffres-cles (stat tiles) ---- */
+.rangee-kpi {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--espace-4);
+    margin: var(--espace-5) 0;
+}
+.carte-kpi {
+    background: var(--surface-1);
+    border: 1px solid var(--grille);
+    border-left: 4px solid var(--kpi-couleur, var(--couleur-accent));
+    border-radius: var(--rayon-sm);
+    padding: var(--espace-4) var(--espace-4);
+    box-shadow: var(--ombre-sm);
+    transition: box-shadow var(--transition), transform var(--transition);
+}
+.carte-kpi:hover { box-shadow: var(--ombre-md); transform: translateY(-1px); }
+.carte-kpi .kpi-etiquette {
+    display: block;
+    color: var(--texte-secondaire);
+    font-size: 0.85rem;
+    margin-bottom: var(--espace-1);
+}
+.carte-kpi .kpi-valeur {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--texte-primaire);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+.carte-kpi .kpi-detail {
+    display: block;
+    color: var(--texte-attenue);
+    font-size: 0.8rem;
+    margin-top: var(--espace-1);
+}
+.carte-kpi.serie-eau         { --kpi-couleur: var(--serie-eau); }
+.carte-kpi.serie-electricite { --kpi-couleur: var(--serie-electricite); }
+.carte-kpi.serie-fibre       { --kpi-couleur: var(--serie-fibre); }
+
+/* ---- Accordeon (details/summary natif, accessible sans JS) ---- */
+.accordeon {
+    border: 1px solid var(--grille);
+    border-radius: var(--rayon-sm);
+    margin-bottom: var(--espace-3);
+    background: var(--surface-1);
+    transition: box-shadow var(--transition);
+}
+.accordeon[open] { box-shadow: var(--ombre-sm); }
+.accordeon summary {
+    cursor: pointer;
+    padding: var(--espace-4) var(--espace-4);
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--couleur-accent);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: var(--espace-2);
+    border-radius: var(--rayon-sm);
+    transition: background var(--transition);
+}
+.accordeon summary::-webkit-details-marker { display: none; }
+.accordeon summary::before {
+    content: "▸";
+    display: inline-block;
+    transition: transform var(--transition);
+    color: var(--texte-attenue);
+    flex-shrink: 0;
+}
+.accordeon[open] summary::before { transform: rotate(90deg); }
+.accordeon summary:hover { background: var(--grille); }
+.accordeon summary:hover, .accordeon summary:focus-visible {
+    outline: 3px solid #ffbf47;
+    outline-offset: -2px;
+}
+.accordeon .accordeon-contenu {
+    padding: 0 var(--espace-4) var(--espace-4) var(--espace-4);
+    border-top: 1px solid var(--grille);
+    padding-top: var(--espace-3);
+}
+
+/* ---- Legende ---- */
+.legende {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-5);
+    margin: var(--espace-3) 0;
+    font-size: 0.9rem;
+}
+.legende .item-legende { display: flex; align-items: center; gap: var(--espace-2); }
+.legende .puce { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.legende .puce.serie-eau         { background: var(--serie-eau); }
+.legende .puce.serie-electricite { background: var(--serie-electricite); }
+.legende .puce.serie-fibre       { background: var(--serie-fibre); }
+
+/* ---- Graphique en barres (comparaison inter-provinces) ---- */
+.graphique-barres { margin: var(--espace-4) 0; }
+.ligne-province { margin-bottom: var(--espace-4); }
+.ligne-province .nom-province {
+    font-weight: 600;
+    margin-bottom: var(--espace-1);
+    color: var(--texte-primaire);
+}
+.barre-groupe {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-2);
+    margin-bottom: 3px;
+}
+.barre-groupe .barre-etiquette {
+    width: 6rem;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    color: var(--texte-secondaire);
+}
+.barre-groupe .barre-piste {
+    flex-grow: 1;
+    background: var(--grille);
+    border-radius: 4px;
+    height: 18px;
+    position: relative;
+    overflow: hidden;
+}
+.barre-groupe .barre-remplissage {
+    display: block;
+    height: 18px;
+    border-radius: 4px;
+    min-width: 2px;
+    transition: width 240ms ease;
+}
+.barre-groupe.serie-eau         .barre-remplissage { background: var(--serie-eau); }
+.barre-groupe.serie-electricite .barre-remplissage { background: var(--serie-electricite); }
+.barre-groupe.serie-fibre       .barre-remplissage { background: var(--serie-fibre); }
+.barre-groupe .barre-valeur {
+    width: 3.2rem;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    color: var(--texte-primaire);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---- Section carte, mise en avant (pas un element secondaire) ---- */
+.section-cartes {
+    background: var(--surface-1);
+    border: 1px solid var(--grille);
+    border-top: 3px solid var(--couleur-accent);
+    border-radius: var(--rayon-md);
+    padding: var(--espace-5) var(--espace-5);
+    margin: var(--espace-6) 0;
+    box-shadow: var(--ombre-sm);
+}
+.section-cartes h3 {
+    margin-top: 0;
+    font-size: 1.3rem;
+}
+
+/* ---- Encadre de definition (vulgarisation d'un concept, sans sacrifier l'exactitude) ---- */
+.encadre-definition {
+    background: var(--surface-1);
+    border-left: 3px solid var(--couleur-accent);
+    border-radius: 0 var(--rayon-sm) var(--rayon-sm) 0;
+    padding: var(--espace-3) var(--espace-4);
+    margin: var(--espace-3) 0 var(--espace-4) 0;
+    font-size: 0.92rem;
+    color: var(--texte-secondaire);
+}
+.encadre-definition strong { color: var(--texte-primaire); }
+
+/* ---- Carte choroplethe ---- */
+.conteneur-carte {
+    width: 100%;
+    margin: var(--espace-3) 0;
+    background: var(--couleur-fond);
+    border: 1px solid var(--grille);
+    border-radius: var(--rayon-sm);
+    padding: var(--espace-4);
+    min-height: 14rem;
+    box-shadow: var(--ombre-sm);
+}
+.conteneur-carte svg { width: 100%; height: auto; display: block; }
+.conteneur-carte-centree { max-width: 40rem; margin-left: auto; margin-right: auto; }
+.conteneur-carte path { cursor: pointer; transition: opacity var(--transition); }
+.carte-modele {
+    font-size: 0.82rem;
+    color: var(--texte-secondaire);
+    margin: 0 0 var(--espace-3) 0;
+    padding-bottom: var(--espace-2);
+    border-bottom: 1px solid var(--grille);
+}
+.carte-tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--texte-primaire);
+    color: var(--surface-1);
+    padding: var(--espace-2) var(--espace-3);
+    border-radius: var(--rayon-sm);
+    font-size: 0.85rem;
+    box-shadow: var(--ombre-md);
+    transition: opacity 0.1s ease;
+    z-index: 50;
+    max-width: 16rem;
+}
+.legende-carte {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espace-2);
+    font-size: 0.8rem;
+    color: var(--texte-secondaire);
+    margin-top: var(--espace-2);
+}
+.legende-carte .degrade-legende {
+    width: 8rem;
+    height: 10px;
+    border-radius: 3px;
+}
+
+/* ---- Diagramme en barres groupees -- legende interactive (emphase au survol) ---- */
+.legende-barres-groupees {
+    display: flex;
+    gap: var(--espace-5);
+    margin-bottom: var(--espace-2);
+}
+.legende-barres-groupees .item-legende-gb {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espace-2);
+    font-size: 0.88rem;
+    color: var(--texte-primaire);
+    cursor: pointer;
+    padding: var(--espace-1) var(--espace-2);
+    border-radius: var(--rayon-sm);
+    transition: background var(--transition);
+}
+.legende-barres-groupees .item-legende-gb:hover,
+.legende-barres-groupees .item-legende-gb:focus-visible {
+    outline: 2px solid #ffbf47;
+    background: var(--grille);
+}
+.legende-barres-groupees .puce {
+    width: 12px; height: 12px; border-radius: 3px; display: inline-block;
+}
+
+/* ---- Bascule table/graphique ---- */
+.bascule-table summary {
+    cursor: pointer;
+    color: var(--couleur-accent);
+    font-weight: 600;
+    padding: var(--espace-2) 0;
+    transition: color var(--transition);
+}
+.bascule-table summary:hover { color: var(--couleur-titre); }
