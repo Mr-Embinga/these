@@ -1,14 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Enrichit les artefacts de l'application : agrégats provinciaux avec taux CORRIGÉ (pas seulement
-naïf), arbitrage documenté par réseau, importance des variables du modèle retenu, et synthèse des
-résultats de validation pour la page Méthode.
 
-Arbitrage (décision actée le 2026-08-15, note_correction_estimations.md §4) :
-  - Eau, électricité : taux repondéré retenu (bénéfice net mesuré, -18% et -36% d'erreur moyenne).
-  - Fibre : taux naïf conservé (repondération inefficace en moyenne, -4%, et dégradée sur 3
-    provinces) -- affiché avec avertissement sur le plancher d'incertitude irréductible (36,2%).
-"""
 import json
 import joblib
 import numpy as np
