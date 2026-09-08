@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Estimation de l'incertitude (référentiel 1.5) :
+Estimation de l'incertitude  :
   A. Calibration de la probabilité au niveau structure (interne Estuaire vs hors domaine)
   B. Marge par sous-domaine (niveau 2, leave-one-subdomain-out) -- dispersion d'erreur
   C. Incertitude irréductible -- taux conditionnel par profil catégoriel (plancher bayésien approché)
