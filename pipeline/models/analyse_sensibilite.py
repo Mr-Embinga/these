@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Analyse de sensibilite (referentiel 1.5) : l'ecart de relation n'etant pas identifiable en
+Analyse de sensibilite : l'ecart de relation n'etant pas identifiable en
 conditions reelles, on en evalue l'impact par scenarios de degradation volontaire de la relation
 apprise -- translation de seuil et attenuation des coefficients (probabilites tirees vers 0.5) --
 et on observe a partir de quelle ampleur le classement provincial predit s'inverse par rapport
