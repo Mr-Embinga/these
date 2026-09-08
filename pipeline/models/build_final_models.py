@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Entraîne et sauvegarde sur disque les modèles de production (un par réseau), plus les artefacts
-nécessaires à l'application : profils de support commun (référentiel 1.2, indicateur "hors
-support"), agrégats provinciaux (taux prédit, marge d'incertitude, écart de composition).
+nécessaires à l'application : profils de support commun, agrégats provinciaux (taux prédit, marge d'incertitude, écart de composition).
 """
 import json
 import joblib
