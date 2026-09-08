@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Etend la repondération (note_correction_estimations.md) au niveau département : reprend la même
+Etend la repondération au niveau département : reprend la même
 mécanique par province (classifieur de séparabilité, poids tronqués, ré-entraînement pondéré),
 mais agrège les prédictions par département plutôt que par province seule -- pour la carte de
 production (taux corrigé). Réutilise l'extraction avec département de niveau3_par_departement.py.
