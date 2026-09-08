@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Repondération et correction de l'agrégat (référentiel 1.5).
+Repondération et correction de l'agrégat.
 Pour chaque province cible : classifieur de séparabilité Estuaire vs province (sur les seules
 caractéristiques, jamais les variables de service), poids d'importance tronqués, ré-entraînement
 pondéré du modèle retenu (XGBoost), et comparaison de l'agrégat corrigé vs naïf vs vérité réelle.
